@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "GtkListViewDemo"
+    name: "GtkListViewDemo",
     dependencies: [
         .Package(url: "https://github.com/rhx/SwiftGtk.git", majorVersion: 3)
     ]
