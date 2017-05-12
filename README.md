@@ -5,6 +5,7 @@ A simple demo showing how to create gtk list views (using GtkTreeView) in Swift
 Make sure you have all the prerequisites installed (see below).  After that, you can simply clone this repository and build the command line executable (be patient, this will download all the required dependencies and take a while to compile) using
 
 	git clone https://github.com/rhx/SwiftGtkListViewDemo.git
+	cd SwiftGtkListViewDemo
 	./build.sh
 	
 After that, you can run the program using
