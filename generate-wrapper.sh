@@ -4,7 +4,7 @@
 # This calls the non-recursive gir-to-swift.sh to do the heavy lifting.
 #
 . ./config.sh
-./package.sh fetch
+./package.sh update
 if ! pushd .build/gir2swift >/dev/null 2>&1 ; then
 	mkdir -p .build
 	pushd .build >/dev/null
@@ -13,6 +13,8 @@ if ! pushd .build/gir2swift >/dev/null 2>&1 ; then
 fi
 export PATH=`pwd`/.build/debug:${PATH}
 popd >/dev/null
+export PACKAGES=.build/checkouts
+[ -e $PACKAGES ] || export PACKAGES=Packages
 if which parallel >/dev/null ; then
   for gen in $PACKAGES/*/gir-to-swift.sh ; do \
 	echo "( cd `dirname $gen` && ./`basename $gen` $@ )" \; \

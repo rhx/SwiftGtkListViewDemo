@@ -6,5 +6,6 @@ let package = Package(
     name: "GtkListViewDemo",
     dependencies: [
         .Package(url: "https://github.com/rhx/SwiftGtk.git", majorVersion: 3)
-    ]
+    ],
+    swiftLanguageVersions: [3, 4]
 )
