@@ -4,7 +4,7 @@ import Gtk
 
 var window: ApplicationWindow!
 var store: ListStore!
-var listView: ListView!
+var listView: TreeView!
 var renderers = [CellRenderer]()
 var columns = [TreeViewColumn]()
 var i = TreeIter()
@@ -20,7 +20,7 @@ let status = Application.run(startupHandler: nil) { app in
         store.append(asNextRow: i, "The Principle of Reason", "Martin Heidegger", false)
         store.append(asNextRow: i, "The Art of Computer Programming", "Donald E. Knuth", true)
         store.append(asNextRow: i, "Structure and Interpretation of Computer Programs", "Harold Abelson and Gerald J. Sussman", false)
-        listView = ListView(model: store)
+        listView = TreeView(model: store)
         columns = [
             ("Author", "text", CellRendererText()),
             ("Title",  "text", CellRendererText()),
@@ -32,8 +32,8 @@ let status = Application.run(startupHandler: nil) { app in
         }
         listView.append(columns)
     }
-    window.add(widget: listView)
-    window.showAll()
+    window.set(child: listView)
+    window.present()
 }
 
 withExtendedLifetime([window as Any, store as Any, columns, renderers, listView as Any, i]) {
