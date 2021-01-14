@@ -1,23 +1,50 @@
 # SwiftGtkListViewDemo
+
 A simple demo showing how to create gtk list views (using GtkTreeView) in Swift
 
+![macOS 11 build](https://github.com/rhx/SwiftGtkListViewDemo/workflows/macOS%2011/badge.svg)
+![macOS 10.15 build](https://github.com/rhx/SwiftGtkListViewDemo/workflows/macOS%2010.15/badge.svg)
+![macOS gtk4 build](https://github.com/rhx/SwiftGtkListViewDemo/workflows/macOS%20gtk4/badge.svg)
+![Ubuntu 20.04 build](https://github.com/rhx/SwiftGtkListViewDemo/workflows/Ubuntu%2020.04/badge.svg)
+![Ubuntu 18.04 build](https://github.com/rhx/SwiftGtkListViewDemo/workflows/Ubuntu%2018.04/badge.svg)
+
 ## Building
+
 Make sure you have all the prerequisites installed (see below).  After that, you can simply clone this repository and build the command line executable (be patient, this will download all the required dependencies and take a while to compile) using
 
 	git clone https://github.com/rhx/SwiftGtkListViewDemo.git
 	cd SwiftGtkListViewDemo
-	./build.sh
-	
-After that, you can run the program using
+    ./run-gir2swift.sh
+	swift build
 
-	.build/debug/GtkListViewDemo
+You can run the program using
 
-A 'Book List Demo' window should appear that contains a list view.  To exit the program, click the close button or press Control-C in the Terminal window.
+	swift run
 
-### Xcode
+A simple, empty 'Hello World' window should appear.  To exit the program, click the close button or press Control-C in the Terminal window.
 
-On macOS, you can build the project using Xcode instead.  To do this, you need to create an Xcode project first, then open the project in the Xcode IDE:
+### macOS
 
+Please note that on macOS, due to a bug currently in the Swift Package Manager,
+you need to pass in the build flags manually, i.e. instead of `swift build` and `swift run` you can run
+
+    swift build `./run-gir2swift.sh flags -noUpdate`
+    swift run   `./run-gir2swift.sh flags -noUpdate`
+
+#### Application Bundler
+
+Under macOS, you can also create an Application bundle that you can create and open directly:
+
+    ./app-bundle.sh
+	open .build/app/GtkListViewDemo.app
+
+This bundle is self-contained and you can move it to your `Applications` folder (or wherever it suits you), e.g.:
+
+	mv .build/app/GtkListViewDemo.app /Applications
+
+#### Xcode
+
+On macOS you can also build the project using Xcode instead (but there is no full macOS app target yet, only a command-line executable).  To do this, you need to create an Xcode project first, then open the project in the Xcode IDE:
 
 	./xcodegen.sh
 	open GtkListViewDemo.xcodeproj
@@ -26,13 +53,26 @@ After that, select the executable target (not the Bundle/Framework target with t
 
 ## What is new?
 
-## What is new?
 
-### Support for gtk 4.x
+Experimental support for gtk 4 was added via the `gtk4` branch.
 
-There now is a `gtk4` branch supporting the latest version of gtk.
+Version 12 of gir2swift pulls in [PR#10](https://github.com/rhx/gir2swift/pull/10), addressing several issues:
 
-### Other notable changes
+- Improvements to the Build experience and LSP [rhx/SwiftGtk#34](https://github.com/rhx/SwiftGtk/issues/34)
+- Fix issues with LLDB [rhx/SwiftGtk#39](https://github.com/rhx/SwiftGtk/issues/39)
+- **Controversial:** Implicitly marks all declarations named "priv" as if they had attribute `private=1`
+- Prevents all "Private" records from generating unless generated in their instance record
+  - `-a` option generates all records
+- Introduces CI
+- For Class metadata types no longer generates class wrappers. Ref structs now contain static method which returnes the GType of the class and instance of the Class metatype wrapped in the Ref struct.
+- Adds final class GWeak<T> where T could be any Ref struct of a type which supports ARC. This class is a property wrapper which contains weak reference to any instance of T. This is especially beneficial for capture lists.
+- Adds support for weak observation.
+- Constructors and factories of GObjectInitiallyUnowned classes now consume floating reference upon initialisation as advised by [the GObject documentation](https://developer.gnome.org/gobject/stable/gobject-The-Base-Object-Type.html)
+
+Partially implemented:
+- Typed signal generation. Issues shown in [rhx/SwiftGtk#35](https://github.com/rhx/SwiftGtk/issues/35) hat remain to be addressed are listed here: [mikolasstuchlik/gir2swift#2](https://github.com/mikolasstuchlik/gir2swift/pull/2).
+
+### Other Notable changes
 
 Version 11 introduces a new type system into `gir2swift`,
 to ensure it has a representation of the underlying types.
@@ -68,7 +108,6 @@ on macOS, or on Linux you should get something like:
 
 The Swift wrappers have been tested with glib-2.56, 2.58, 2.60, 2.62, and 2.64, and gdk/gtk 3.22, 3.24, and 4.0 on the `gtk4` branch.  They should work with higher versions, but YMMV.  Also make sure you have `gobject-introspection` and its `.gir` files installed.
 
-
 #### Linux
 
 ##### Ubuntu
@@ -100,9 +139,11 @@ On macOS, you can install gtk using HomeBrew (for setup instructions, see http:/
 
 
 ## Troubleshooting
+
 Here are some common errors you might encounter and how to fix them.
 
 ### Old Swift toolchain or Xcode
+
 If you get an error such as
 
 	$ ./build.sh 
@@ -115,3 +156,11 @@ this probably means that your Swift toolchain is too old.  Make sure the latest 
 	sudo xcode-select -s /Applications/Xcode.app
 	xcode-select --install
 
+### Known Issues
+
+ * When building, a lot of warnings appear.  This is largely an issue with automatic `RawRepresentable` conformance in the Swift Standard library.  As a workaround, you can turn this off by passing the `-Xswiftc -suppress-warnings` parameter when building.
+ 
+ * The current build system does not support directory paths with spaces (e.g. the `My Drive` directory used by Google Drive File Stream).
+ * BUILD_DIR is not supported in the current build system.
+ 
+As a workaround, you can use the old build scripts, e.g. `./build.sh` (instead of `run-gir2swift.sh` and `swift build`) to build a package.
