@@ -8,8 +8,13 @@ var listView: ListView!
 var renderers = [CellRenderer]()
 var columns = [TreeViewColumn]()
 var i = TreeIter()
+var appActionEntries = [
+    GActionEntry(name: g_strdup("quit"), activate: { Gtk.ApplicationRef(gpointer: $2).quit() }, parameter_type: nil, state: nil, change_state: nil, padding: (0, 0, 0))
+]
 
-let status = Application.run(startupHandler: nil) { app in
+let status = Application.run(startupHandler: { app in
+    app.addAction(entries: &appActionEntries, nEntries: appActionEntries.count, userData: app.ptr)
+}, activationHandler: { app in
     window = ApplicationWindow(application: app)
     window.title = "Book List Demo"
     window.setDefaultSize(width: 640, height: 360)
@@ -34,7 +39,7 @@ let status = Application.run(startupHandler: nil) { app in
     }
     window.add(widget: listView)
     window.showAll()
-}
+})
 
 withExtendedLifetime([window as Any, store as Any, columns, renderers, listView as Any, i]) {
     guard let status = status else {
