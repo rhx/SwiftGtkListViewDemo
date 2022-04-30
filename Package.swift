@@ -1,14 +1,15 @@
-// swift-tools-version:5.2
+// swift-tools-version:5.6
 
 import PackageDescription
 
 let package = Package(
     name: "GtkListViewDemo",
     dependencies: [
-        .package(name: "gir2swift", url: "https://github.com/rhx/gir2swift.git", .branch("development")),
-        .package(name: "Gtk", url: "https://github.com/rhx/SwiftGtk.git", .branch("gtk3")),
+        .package(url: "https://github.com/rhx/SwiftGtk.git", branch: "monorepo"),
     ],
     targets: [
-        .target(name: "GtkListViewDemo", dependencies: ["Gtk"]),
+        .executableTarget(name: "GtkListViewDemo", dependencies: [
+            .product(name: "Gtk", package: "SwiftGtk"),
+        ]),
     ]
 )
